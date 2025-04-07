@@ -20,18 +20,6 @@
 
 <body>
   
-<!-- Login/Register Modal -->
-<div id="authModal" class="modal" style="display: none;">
-  <div class="modal-content">
-    <h2>Login or Register</h2>
-    <form>
-      <input type="text" placeholder="Username or Email" required>
-      <input type="password" placeholder="Password" required>
-      <button type="submit">Login</button>
-      <p>Don't have an account? <a href="#">Register</a></p>
-    </form>
-  </div>
-</div>
 
     <!-- Header -->
     <header>
@@ -307,22 +295,61 @@
 
 </script>
 
-   <!-- Book Now Section -->
+ <!-- Book Now Section -->
 <section class="book-section" id="booknow">
-    <div class="book-content" data-aos="fade-up">
-        <h1 class="book-now-title">Book Your Travel Today</h1>
-        <p class="book-now-text">Give yourself and your family a peaceful and wonderful vacation this holiday</p>
+  <div class="book-content" data-aos="fade-up">
+    <h1 class="book-now-title">Book Your Travel Today</h1>
+    <p class="book-now-text">Give yourself and your family a peaceful and wonderful vacation this holiday</p>
 
-        <!-- Wrap existing button inside an <a> tag -->
-        <a href="booking-page.html" class="book-now-link">
-            <button class="book-now">Book Now</button>
-        </a>
+    <!-- New Button (No anchor) -->
+    <button class="book-now" onclick="openLoginModal()">Book Now</button>
+  </div>
+
+  <div class="bg-circle-2"></div>
+  <img src="https://www.shortcuts.com.au/wp-content/uploads/2021/11/Book-Now-Neon-Sign-2000-wide.gif"
+    data-aos="fade-up" class="book-now-img" alt="Book Your Travel">
+</section>
+
+<!-- Modal HTML -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+
+
+
+<div id="loginForm">
+  <h2>Login</h2>
+  <form onsubmit="handleLogin(); return false;">
+    <input type="text" placeholder="Username or Mobile Number" required>
+    <input type="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+    <p>Don't have an account? <a href="#" onclick="showRegister()">Register here</a></p>
+  </form>
+</div>
+
+<div id="registerForm" style="display:none;">
+  <h2>Register</h2>
+  <form onsubmit="handleRegister(); return false;">
+    <input type="text" placeholder="Full Name" required>
+    <input type="tel" placeholder="Mobile Number" required pattern="[0-9]{10}">
+    <input type="email" placeholder="Email Address" required>
+    <input type="password" placeholder="Password" required minlength="6">
+    
+    <!-- OTP Input -->
+    <div style="margin-top: 10px;">
+      <input type="text" placeholder="Enter OTP" required>
+      <button type="button" onclick="alert('OTP Sent')">Send OTP</button>
     </div>
 
-    <div class="bg-circle-2"></div>
-    <img src="https://www.shortcuts.com.au/wp-content/uploads/2021/11/Book-Now-Neon-Sign-2000-wide.gif" 
-        data-aos="fade-up" class="book-now-img" alt="Book Your Travel">
-</section>
+    <button type="submit">Register</button>
+    <p>Already have an account? <a href="#" onclick="showLogin()">Login here</a></p>
+  </form>
+</div>
+
+  </div>
+</div>
+
+
 
 
    <!-- Chatbot Icon (Appears as a floating circle) -->
