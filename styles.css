@@ -467,6 +467,123 @@ body {
 .book-now:hover::before {
     left: 100%;
 }
+/**/
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 30px;
+  border-radius: 20px;
+  width: 350px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  position: relative;
+  animation: fadeIn 0.3s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.modal h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.modal input {
+  width: 100%;
+  padding: 10px;
+  margin: 12px 0;
+  border-radius: 8px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 14px;
+}
+
+.modal input::placeholder {
+  color: #ddd;
+}
+
+.modal button {
+  width: 100%;
+  padding: 12px;
+  background-color: #23a6d5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal button:hover {
+  background-color: #1a7fa0;
+}
+
+.modal p {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.modal a {
+  color: #ffb347;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.modal a:hover {
+  text-decoration: underline;
+}
+
+.otp-wrapper {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.otp-wrapper input {
+  flex: 2;
+}
+
+.otp-wrapper button {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  background-color: #ffa502;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px; right: 15px;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/**/
+
+
+
+
 
 .bg-circle-2 {
     position: absolute;
