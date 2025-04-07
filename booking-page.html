@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flight Search & Booking</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #1e2a38;
+      border-radius: 12px;
+      padding: 25px;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background-color: #2d3d50;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      background-color: #00bcd4;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0097a7;
+    }
+
+    .results {
+      margin-top: 20px;
+    }
+
+    .flight-card {
+      background-color: #2e3f55;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Flight Search & Booking</h1>
+
+    <!-- Flight Search Form -->
+    <div class="form-group">
+      <label for="from">From (IATA Code):</label>
+      <input type="text" id="from" placeholder="e.g., DEL">
+    </div>
+    <div class="form-group">
+      <label for="to">To (IATA Code):</label>
+      <input type="text" id="to" placeholder="e.g., BOM">
+    </div>
+    <div class="form-group">
+      <label for="date">Travel Date:</label>
+      <input type="date" id="date">
+    </div>
+    <button onclick="fetchFlights()">Search Flights</button>
+
+    <!-- Results -->
+    <div id="results" class="results"></div>
+    <p class="error" id="error"></p>
+
+    <hr style="margin: 30px 0; border-color: #444;" />
+
+    <!-- Booking Form -->
+    <div class="form-group">
+      <label for="fullname">Full Name:</label>
+      <input type="text" id="fullname" placeholder="John Doe">
+    </div>
+    <div class="form-group">
+      <label for="email">Email Address:</label>
+      <input type="email" id="email" placeholder="email@example.com">
+    </div>
+    <div class="form-group">
+      <label for="contact">Contact Number:</label>
+      <input type="tel" id="contact" placeholder="+91 1234567890">
+    </div>
+    <div class="form-group">
+      <label for="people">Number of Travelers:</label>
+      <input type="number" id="people" min="1" max="10">
+    </div>
+    <div class="form-group">
+      <label for="class">Preferred Class:</label>
+      <select id="class">
+        <option value="" disabled selected>Select Class</option>
+        <option value="economy">Economy</option>
+        <option value="business">Business</option>
+        <option value="first">First-Class</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="requests">Special Requests:</label>
+      <textarea id="requests" rows="3" placeholder="Any notes..."></textarea>
+    </div>
+    <button onclick="submitBooking()">Confirm Booking</button>
+
+    <!-- View Flight Fare & Details Button -->
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="flight-details.html" target="_blank">
+        <button style="background-color: #4CAF50; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">
+          View Flight Fare & Details
+        </button>
+      </a>
+    </div>
+  </div>
+
+</body>
+
+
+  <script>
+    const API_KEY = "ac9d2f89f19e65ec9dd3d1f296a16c2b";
+
+    async function fetchFlights() {
+      const from = document.getElementById('from').value.toUpperCase();
+      const to = document.getElementById('to').value.toUpperCase();
+      const date = document.getElementById('date').value;
+      const resultDiv = document.getElementById('results');
+      const errorDiv = document.getElementById('error');
+
+      resultDiv.innerHTML = '';
+      errorDiv.textContent = '';
+
+      if (!from || !to) {
+        errorDiv.textContent = "Please enter both source and destination IATA codes.";
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://api.aviationstack.com/v1/flights?access_key=${API_KEY}&dep_iata=${from}&arr_iata=${to}`);
+        const data = await response.json();
+
+        if (!data || !data.data || data.data.length === 0) {
+          resultDiv.innerHTML = '<p>No flights found for the selected route.</p>';
+          return;
+        }
+
+        // Limit to first 5 flights for cleaner display
+        data.data.slice(0, 5).forEach(flight => {
+          const flightHTML = `
+            <div class="flight-card">
+              <p><strong>Flight:</strong> ${flight.airline.name} (${flight.flight.iata})</p>
+              <p><strong>Departure:</strong> ${flight.departure.airport} at ${flight.departure.scheduled}</p>
+              <p><strong>Arrival:</strong> ${flight.arrival.airport} at ${flight.arrival.scheduled}</p>
+              <p><strong>Status:</strong> ${flight.flight_status}</p>
+            </div>
+          `;
+          resultDiv.innerHTML += flightHTML;
+        });
+      } catch (error) {
+        errorDiv.textContent = "Error fetching flight data. Try again later.";
+        console.error(error);
+      }
+    }
+
+    function submitBooking() {
+      const name = document.getElementById('fullname').value;
+      const email = document.getElementById('email').value;
+      const contact = document.getElementById('contact').value;
+      const travelers = document.getElementById('people').value;
+      const travelClass = document.getElementById('class').value;
+
+      if (!name || !email || !contact || !travelers || !travelClass) {
+        alert("Please fill in all required booking fields.");
+        return;
+      }
+
+      alert(`Booking confirmed!\n\nName: ${name}\nEmail: ${email}\nTravelers: ${travelers}\nClass: ${travelClass}`);
+    }
+  </script>
+</body>
+</html>
