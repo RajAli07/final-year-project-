@@ -1,0 +1,77 @@
+/* General Page Styling */
+body {
+  background-color: #1a1a2e;
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* NavBar Styling */
+.navbar {
+  background-color: #0f3460;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.links-container {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.link-item a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.link-item a:hover {
+  color: #00adb5;
+}
+
+.logo {
+  height: 40px;
+}
+
+/* Page Headings */
+h1 {
+  text-align: center;
+  margin-top: 30px;
+}
+
+/* Table Styling */
+table {
+  width: 90%;
+  margin: 30px auto;
+  border-collapse: collapse;
+  background-color: #2e2e3e;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: center;
+}
+
+th {
+  background-color: #3a3a5e;
+}
+
+tr:nth-child(even) {
+  background-color: #252539;
+}
+
+/* Back Link */
+a.back {
+  display: inline-block;
+  margin: 20px 30px;
+  color: #00adb5;
+  text-decoration: none;
+}
