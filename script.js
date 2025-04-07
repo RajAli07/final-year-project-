@@ -130,3 +130,53 @@ function toggleChat() {
     // Toggle the display of the chatbox
     chatbox.style.display = chatbox.style.display === 'none' || chatbox.style.display === '' ? 'block' : 'none';
 }
+
+
+
+  // Show modal after 60 seconds
+  setTimeout(() => {
+    openLoginModal();
+  }, 60000);
+
+  // Show modal when "Book Now" is clicked
+  const bookNowBtn = document.querySelector(".book-now-link");
+  bookNowBtn.addEventListener("click", function (e) {
+    e.preventDefault(); // prevent direct navigation
+    openLoginModal();
+  });
+
+
+
+
+
+  function openLoginModal() {
+    document.getElementById('loginModal').style.display = 'flex';
+    showLogin(); // always show login first
+  }
+
+  function closeLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+  }
+
+  function showRegister() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+  }
+
+  function showLogin() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerForm').style.display = 'none';
+  }
+
+  function handleLogin() {
+    // Dummy login logic
+    closeLoginModal();
+    window.location.href = "booking-page.html";
+  }
+
+  function handleRegister() {
+    // Dummy register logic
+    closeLoginModal();
+    window.location.href = "booking-page.html";
+  }
+
