@@ -85,6 +85,43 @@
       color: red;
       text-align: center;
     }
+    
+    
+    /* Loader spinner */
+.loader {
+  border: 6px solid #2d3d50;
+  border-top: 6px solid #00bcd4;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Confirmation Badge */
+.confirm-badge {
+  width: 80px;
+  height: 80px;
+  background-color: #4CAF50;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.confirm-badge i {
+  color: white;
+  font-size: 36px;
+  font-weight: bold;
+}
+
   </style>
 </head>
 <body>
@@ -95,11 +132,13 @@
     <!-- Flight Search Form -->
     <div class="form-group">
       <label for="from">From (IATA Code):</label>
-      <input type="text" id="from" placeholder="e.g., DEL">
+      <input type="text" id="from" placeholder="e.g., DEL" list="from-airports">
+      <datalist id="from-airports"></datalist>
     </div>
     <div class="form-group">
       <label for="to">To (IATA Code):</label>
-      <input type="text" id="to" placeholder="e.g., BOM">
+      <input type="text" id="to" placeholder="e.g., BOM" list="to-airports">
+      <datalist id="to-airports"></datalist>
     </div>
     <div class="form-group">
       <label for="date">Travel Date:</label>
@@ -113,37 +152,68 @@
 
     <hr style="margin: 30px 0; border-color: #444;" />
 
-    <!-- Booking Form -->
-    <div class="form-group">
-      <label for="fullname">Full Name:</label>
-      <input type="text" id="fullname" placeholder="John Doe">
+<!-- Booking Form -->
+<div class="form-group">
+  <label for="fullname">Full Name:</label>
+  <input type="text" id="fullname" placeholder="John Doe" required>
+</div>
+<div class="form-group">
+  <label for="email">Email Address:</label>
+  <input type="email" id="email" placeholder="email@example.com" required>
+</div>
+<div class="form-group">
+  <label for="contact">Contact Number:</label>
+  <input type="tel" id="contact" placeholder="+91 1234567890" required>
+</div>
+<div class="form-group">
+  <label for="people">Number of Travelers:</label>
+  <input type="number" id="people" min="1" max="10" required>
+</div>
+<div class="form-group">
+  <label for="class">Preferred Class:</label>
+  <select id="class" required>
+    <option value="" disabled selected>Select Class</option>
+    <option value="economy">Economy</option>
+    <option value="business">Business</option>
+    <option value="first">First-Class</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="requests">Special Requests:</label>
+  <textarea id="requests" rows="3" placeholder="Any notes..."></textarea>
+</div>
+<button onclick="submitBooking()">Confirm Booking</button>
+
+<!-- Traveler Details Form (Hidden initially) -->
+<div id="extra-travelers"></div>
+
+<!-- Confirmation Section -->
+<div id="confirmation" style="display: none; margin-top: 30px; text-align: center;">
+  <div class="flight-card">
+    <!-- Loader initially -->
+    <div id="loader" class="loader"></div>
+    <p id="loading-text" style="color: #00bcd4; font-size: 16px;">Loading...</p>
+
+    <!-- Confirmation tick (hidden at first) -->
+    <div id="tick-mark" class="confirm-badge" style="display: none;">
+      <i>&#10003;</i>
     </div>
-    <div class="form-group">
-      <label for="email">Email Address:</label>
-      <input type="email" id="email" placeholder="email@example.com">
-    </div>
-    <div class="form-group">
-      <label for="contact">Contact Number:</label>
-      <input type="tel" id="contact" placeholder="+91 1234567890">
-    </div>
-    <div class="form-group">
-      <label for="people">Number of Travelers:</label>
-      <input type="number" id="people" min="1" max="10">
-    </div>
-    <div class="form-group">
-      <label for="class">Preferred Class:</label>
-      <select id="class">
-        <option value="" disabled selected>Select Class</option>
-        <option value="economy">Economy</option>
-        <option value="business">Business</option>
-        <option value="first">First-Class</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="requests">Special Requests:</label>
-      <textarea id="requests" rows="3" placeholder="Any notes..."></textarea>
-    </div>
-    <button onclick="submitBooking()">Confirm Booking</button>
+
+    <h2 style="margin-top: 0;">Booking Confirmation</h2>
+    <p><strong>Name:</strong> <span id="conf-name"></span></p>
+    <p><strong>Email:</strong> <span id="conf-email"></span></p>
+    <p><strong>Contact:</strong> <span id="conf-contact"></span></p>
+    <p><strong>Number of Travelers:</strong> <span id="conf-travelers"></span></p>
+    <p><strong>Class:</strong> <span id="conf-class"></span></p>
+    <p><strong>Special Requests:</strong> <span id="conf-requests"></span></p>
+    
+    <!-- Traveler Details Table (If more than 1 traveler) -->
+    <div id="conf-travelers-details"></div>
+    
+    <p id="confirmation-success" style="color: #4CAF50; font-weight: bold; display: none;">Your booking has been successfully confirmed!</p>
+  </div>
+</div>
+
 
     <!-- View Flight Fare & Details Button -->
     <div style="text-align: center; margin-top: 40px;">
@@ -157,66 +227,195 @@
 
 </body>
 
+<script>
+  const API_KEY = "c53d8715160247881b29d0f388a900e9"; // Your new API Key
 
-  <script>
-    const API_KEY = "ac9d2f89f19e65ec9dd3d1f296a16c2b";
+  const airports = [
+    { code: "DEL", name: "Indira Gandhi International Airport (Delhi)" },
+    { code: "BOM", name: "Chhatrapati Shivaji Maharaj International Airport (Mumbai)" },
+    { code: "BLR", name: "Kempegowda International Airport (Bangalore)" },
+    { code: "MAA", name: "Chennai International Airport" },
+    { code: "HYD", name: "Rajiv Gandhi International Airport (Hyderabad)" },
+    { code: "CCU", name: "Netaji Subhas Chandra Bose International Airport (Kolkata)" },
+    { code: "AMD", name: "Sardar Vallabhbhai Patel International Airport (Ahmedabad)" },
+    { code: "GOI", name: "Goa International Airport" }
+  ];
 
-    async function fetchFlights() {
-      const from = document.getElementById('from').value.toUpperCase();
-      const to = document.getElementById('to').value.toUpperCase();
-      const date = document.getElementById('date').value;
-      const resultDiv = document.getElementById('results');
-      const errorDiv = document.getElementById('error');
+  function populateAirports() {
+    const fromDatalist = document.getElementById("from-airports");
+    const toDatalist = document.getElementById("to-airports");
 
-      resultDiv.innerHTML = '';
-      errorDiv.textContent = '';
+    airports.forEach(airport => {
+      const fromOption = document.createElement("option");
+      fromOption.value = airport.code;
+      fromOption.textContent = airport.name;
+      fromDatalist.appendChild(fromOption);
 
-      if (!from || !to) {
-        errorDiv.textContent = "Please enter both source and destination IATA codes.";
+      const toOption = document.createElement("option");
+      toOption.value = airport.code;
+      toOption.textContent = airport.name;
+      toDatalist.appendChild(toOption);
+    });
+  }
+
+  populateAirports();
+
+  async function fetchFlights() {
+    const from = document.getElementById('from').value.toUpperCase();
+    const to = document.getElementById('to').value.toUpperCase();
+    const resultDiv = document.getElementById('results');
+    const errorDiv = document.getElementById('error');
+
+    resultDiv.innerHTML = '';
+    errorDiv.textContent = '';
+
+    if (!from || !to) {
+      errorDiv.textContent = "Please enter both source and destination IATA codes.";
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://api.aviationstack.com/v1/flights?access_key=${API_KEY}&dep_iata=${from}&arr_iata=${to}`);
+      const data = await response.json();
+
+      console.log("Flight API Response:", data);
+
+      if (!data || !data.data || data.data.length === 0) {
+        resultDiv.innerHTML = '<p>No flights found for the selected route.</p>';
         return;
       }
 
-      try {
-        const response = await fetch(`http://api.aviationstack.com/v1/flights?access_key=${API_KEY}&dep_iata=${from}&arr_iata=${to}`);
-        const data = await response.json();
+      data.data.slice(0, 5).forEach(flight => {
+        const flightHTML = `
+          <div class="flight-card">
+            <p><strong>Flight:</strong> ${flight.airline.name} (${flight.flight.iata})</p>
+            <p><strong>Departure:</strong> ${flight.departure.airport} at ${flight.departure.scheduled}</p>
+            <p><strong>Arrival:</strong> ${flight.arrival.airport} at ${flight.arrival.scheduled}</p>
+            <p><strong>Status:</strong> ${flight.flight_status}</p>
+          </div>
+        `;
+        resultDiv.innerHTML += flightHTML;
+      });
+    } catch (error) {
+      errorDiv.textContent = "Error fetching flight data. Try again later.";
+      console.error("Error during API fetch:", error);
+    }
+  }
+  
+  // Function to handle form submission
+  function submitBooking() {
+    const name = document.getElementById('fullname').value;
+    const email = document.getElementById('email').value;
+    const contact = document.getElementById('contact').value;
+    const travelers = document.getElementById('people').value;
+    const travelClass = document.getElementById('class').value;
+    const requests = document.getElementById('requests').value;
 
-        if (!data || !data.data || data.data.length === 0) {
-          resultDiv.innerHTML = '<p>No flights found for the selected route.</p>';
-          return;
-        }
+    if (!name || !email || !contact || !travelers || !travelClass) {
+      alert("Please fill in all required booking fields.");
+      return;
+    }
 
-        // Limit to first 5 flights for cleaner display
-        data.data.slice(0, 5).forEach(flight => {
-          const flightHTML = `
-            <div class="flight-card">
-              <p><strong>Flight:</strong> ${flight.airline.name} (${flight.flight.iata})</p>
-              <p><strong>Departure:</strong> ${flight.departure.airport} at ${flight.departure.scheduled}</p>
-              <p><strong>Arrival:</strong> ${flight.arrival.airport} at ${flight.arrival.scheduled}</p>
-              <p><strong>Status:</strong> ${flight.flight_status}</p>
-            </div>
-          `;
-          resultDiv.innerHTML += flightHTML;
-        });
-      } catch (error) {
-        errorDiv.textContent = "Error fetching flight data. Try again later.";
-        console.error(error);
+    // Collect traveler details if more than 1 traveler
+    let travelersData = [];
+    if (travelers > 1) {
+      for (let i = 1; i <= travelers; i++) {
+        const travelerName = document.querySelector(`input[name="traveler_name_${i}"]`).value;
+        const travelerAge = document.querySelector(`input[name="traveler_age_${i}"]`).value;
+        const travelerGender = document.querySelector(`select[name="traveler_gender_${i}"]`).value;
+
+        travelersData.push({ sNo: i, name: travelerName, age: travelerAge, gender: travelerGender });
       }
     }
 
-    function submitBooking() {
-      const name = document.getElementById('fullname').value;
-      const email = document.getElementById('email').value;
-      const contact = document.getElementById('contact').value;
-      const travelers = document.getElementById('people').value;
-      const travelClass = document.getElementById('class').value;
+    // Fill confirmation data
+    document.getElementById("conf-name").innerText = name;
+    document.getElementById("conf-email").innerText = email;
+    document.getElementById("conf-contact").innerText = contact;
+    document.getElementById("conf-travelers").innerText = travelers;
+    document.getElementById("conf-class").innerText = travelClass;
+    document.getElementById("conf-requests").innerText = requests || "None";
 
-      if (!name || !email || !contact || !travelers || !travelClass) {
-        alert("Please fill in all required booking fields.");
-        return;
-      }
-
-      alert(`Booking confirmed!\n\nName: ${name}\nEmail: ${email}\nTravelers: ${travelers}\nClass: ${travelClass}`);
+    // Show traveler details if more than 1 traveler
+    let travelerDetailsHTML = '';
+    if (travelers > 1) {
+      travelerDetailsHTML = `
+        <h3>Traveler Details:</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; background-color: #2d3d50; color: white;">
+          <thead>
+            <tr>
+              <th>S.No.</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Gender</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${travelersData.map(t => `
+              <tr>
+                <td>${t.sNo}</td>
+                <td>${t.name}</td>
+                <td>${t.age}</td>
+                <td>${t.gender}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
     }
-  </script>
-</body>
+    document.getElementById("conf-travelers-details").innerHTML = travelerDetailsHTML;
+
+    // Show confirmation section with loader and "Loading..."
+    const confirmSection = document.getElementById("confirmation");
+    const loader = document.getElementById("loader");
+    const loadingText = document.getElementById("loading-text");
+    const tick = document.getElementById("tick-mark");
+    const successText = document.getElementById("confirmation-success");
+
+    confirmSection.style.display = "block";
+    loader.style.display = "block";
+    loadingText.style.display = "block";
+    tick.style.display = "none";
+    successText.style.display = "none";
+
+    // Simulate loading delay
+    setTimeout(() => {
+      loader.style.display = "none";
+      loadingText.style.display = "none";
+      tick.style.display = "flex";
+      successText.style.display = "block";
+    }, 2000);
+  }
+
+  // Event Listener for dynamically adding traveler details
+  document.getElementById('people').addEventListener('input', function () {
+    const travelerCount = parseInt(this.value);
+    const container = document.getElementById('extra-travelers');
+    container.innerHTML = ''; // Clear any old traveler form
+
+    if (travelerCount > 1) {
+      for (let i = 1; i <= travelerCount; i++) {
+        const travelerDiv = document.createElement('div');
+        travelerDiv.classList.add('form-group');
+        travelerDiv.innerHTML = `
+          <h4>Traveler ${i}</h4>
+          <label for="traveler_name_${i}">Full Name:</label>
+          <input type="text" id="traveler_name_${i}" name="traveler_name_${i}" placeholder="Traveler ${i} Name" required>
+
+          <label for="traveler_age_${i}">Age:</label>
+          <input type="number" id="traveler_age_${i}" name="traveler_age_${i}" placeholder="Traveler ${i} Age" required>
+
+          <label for="traveler_gender_${i}">Gender:</label>
+          <select id="traveler_gender_${i}" name="traveler_gender_${i}" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        `;
+        container.appendChild(travelerDiv);
+      }
+    }
+  });
+</script>
+
 </html>
