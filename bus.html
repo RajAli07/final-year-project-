@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bus Fare Checker</title>
+  <link rel="stylesheet" href="styles1.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="flight.html">Flight Fare</a>
+    <a href="train.html">Train Fare</a>
+    <a href="bus.html">Bus Fare</a>
+  </div>
+
+  <div id="bus" class="content">
+    <h2>Bus Fare Checker</h2>
+
+    <!-- Bus Fare Form -->
+    <div class="form-group">
+      <label for="bus-from">From Location:</label>
+      <input type="text" id="bus-from" placeholder="Enter location">
+    </div>
+    <div class="form-group">
+      <label for="bus-to">To Location:</label>
+      <input type="text" id="bus-to" placeholder="Enter location">
+    </div>
+    <div class="form-group">
+      <label for="bus-date">Date of Travel:</label>
+      <input type="date" id="bus-date">
+    </div>
+    <button onclick="fetchBusFare()">Check Bus Fare</button>
+
+    <div id="bus-results"></div>
+    <div id="bus-error" style="color: red;"></div>
+  </div>
+
+  <script>
+    function fetchBusFare() {
+      const busFrom = document.getElementById('bus-from').value;
+      const busTo = document.getElementById('bus-to').value;
+      const busDate = document.getElementById('bus-date').value;
+      const resultDiv = document.getElementById('bus-results');
+      const errorDiv = document.getElementById('bus-error');
+
+      resultDiv.innerHTML = '';
+      errorDiv.textContent = '';
+
+      if (!busFrom || !busTo || !busDate) {
+        errorDiv.textContent = "Please fill all the required fields.";
+        return;
+      }
+
+      // Replace this section with the real API call for Bus fare
+      resultDiv.innerHTML = `<p>Bus fare data for ${busFrom} to ${busTo} on ${busDate} will be displayed here.</p>`;
+    }
+  </script>
+
+</body>
+</html>
