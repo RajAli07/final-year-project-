@@ -179,4 +179,3 @@ function toggleChat() {
     closeLoginModal();
     window.location.href = "booking-page.html";
   }
-
