@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Train Fare Checker</title>
+  <link rel="stylesheet" href="styles1.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="flight.html">Flight Fare</a>
+    <a href="train.html">Train Fare</a>
+    <a href="bus.html">Bus Fare</a>
+  </div>
+
+  <div id="train" class="content">
+    <h2>Train Fare Checker</h2>
+
+    <!-- Train Fare Form -->
+    <div class="form-group">
+      <label for="train-from">From Station:</label>
+      <input type="text" id="train-from" placeholder="Enter station">
+    </div>
+    <div class="form-group">
+      <label for="train-to">To Station:</label>
+      <input type="text" id="train-to" placeholder="Enter station">
+    </div>
+    <div class="form-group">
+      <label for="train-date">Date of Travel:</label>
+      <input type="date" id="train-date">
+    </div>
+    <button onclick="fetchTrainFare()">Check Train Fare</button>
+
+    <div id="train-results"></div>
+    <div id="train-error" style="color: red;"></div>
+  </div>
+
+  <script>
+    function fetchTrainFare() {
+      const trainFrom = document.getElementById('train-from').value;
+      const trainTo = document.getElementById('train-to').value;
+      const trainDate = document.getElementById('train-date').value;
+      const resultDiv = document.getElementById('train-results');
+      const errorDiv = document.getElementById('train-error');
+
+      resultDiv.innerHTML = '';
+      errorDiv.textContent = '';
+
+      if (!trainFrom || !trainTo || !trainDate) {
+        errorDiv.textContent = "Please fill all the required fields.";
+        return;
+      }
+
+      // Replace this section with the real API call for Train fare
+      resultDiv.innerHTML = `<p>Train fare data for ${trainFrom} to ${trainTo} on ${trainDate} will be displayed here.</p>`;
+    }
+  </script>
+
+</body>
+</html>
