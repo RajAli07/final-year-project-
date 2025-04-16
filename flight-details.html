@@ -1,50 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Flight Fare Details</title>
-  <link rel="stylesheet" href="styles1.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fare Checker</title>
+    <link rel="stylesheet" href="styles1.css">
+  
 </head>
 <body>
 
-  <!-- Header -->
-  <header>
-    <nav class="navbar">
-      <ul class="links-container">
-        <li class="link-item"><a href="index.html">Home</a></li>
-        <li class="link-item"><a href="flight-fares.html">Flight Fares</a></li>
-      </ul>
-    </nav>
-  </header>
+  <!-- Navigation Bar -->
+  <div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="#flight">Flight Fare</a>
+    <a href="train.html">Train Fare</a>
+    <a href="bus.html">Bus Fare</a>
+  </div>
 
-  <h1>Flight Fare Details</h1>
-  <table>
-    <tr>
-      <th>Flight No.</th>
-      <th>Route</th>
-      <th>Price (INR)</th>
-      <th>Duration</th>
-    </tr>
-    <tr>
-      <td>AI-202</td>
-      <td>Delhi → Mumbai</td>
-      <td>₹4,500</td>
-      <td>2h 15m</td>
-    </tr>
-    <tr>
-      <td>6E-305</td>
-      <td>Bangalore → Kolkata</td>
-      <td>₹6,200</td>
-      <td>2h 45m</td>
-    </tr>
-    <tr>
-      <td>UK-115</td>
-      <td>Mumbai → Goa</td>
-      <td>₹2,800</td>
-      <td>1h 10m</td>
-    </tr>
-  </table>
+  <div id="home" class="content">
+    <h1>Welcome to the Fare Checker</h1>
+    <p>Check Flight, Train, and Bus fares in real-time.</p>
+  </div>
+
+  <!-- Flight Fare Page -->
+  <div id="flight" class="content">
+    <h2>Flight Fare Checker</h2>
+
+    <!-- Flight Fare Form -->
+    <div class="form-group">
+      <label for="from">From (IATA Code):</label>
+      <input type="text" id="from" placeholder="DEL">
+    </div>
+    <div class="form-group">
+      <label for="to">To (IATA Code):</label>
+      <input type="text" id="to" placeholder="BOM">
+    </div>
+    <button onclick="fetchFlights()">Check Flight Fare</button>
+
+    <div id="results"></div>
+    <div id="error" style="color: red;"></div>
+  </div>
+
+  <!-- Train Fare Page -->
+  <div id="train" class="content" style="display: none;">
+    <h2>Train Fare Checker</h2>
+
+    <!-- Train Fare Form -->
+    <div class="form-group">
+      <label for="train-from">From Station:</label>
+      <input type="text" id="train-from" placeholder="Enter station">
+    </div>
+    <div class="form-group">
+      <label for="train-to">To Station:</label>
+      <input type="text" id="train-to" placeholder="Enter station">
+    </div>
+    <div class="form-group">
+      <label for="train-date">Date of Travel:</label>
+      <input type="date" id="train-date">
+    </div>
+    <button onclick="fetchTrainFare()">Check Train Fare</button>
+
+    <div id="train-results"></div>
+    <div id="train-error" style="color: red;"></div>
+  </div>
+
+  <!-- Bus Fare Page -->
+  <div id="bus" class="content" style="display: none;">
+    <h2>Bus Fare Checker</h2>
+
+    <!-- Bus Fare Form -->
+    <div class="form-group">
+      <label for="bus-from">From Location:</label>
+      <input type="text" id="bus-from" placeholder="Enter location">
+    </div>
+    <div class="form-group">
+      <label for="bus-to">To Location:</label>
+      <input type="text" id="bus-to" placeholder="Enter location">
+    </div>
+    <div class="form-group">
+      <label for="bus-date">Date of Travel:</label>
+      <input type="date" id="bus-date">
+    </div>
+    <button onclick="fetchBusFare()">Check Bus Fare</button>
+
+    <div id="bus-results"></div>
+    <div id="bus-error" style="color: red;"></div>
+  </div>
+
+  <script>
+    // Flight Fare API
+    const API_KEY = "c53d8715160247881b29d0f388a900e9"; // Replace with your AviationStack API key
+
+    async function fetchFlights() {
+      const from = document.getElementById('from').value.toUpperCase();
+      const to = document.getElementById('to').value.toUpperCase();
+      const resultDiv = document.getElementById('results');
+      const errorDiv = document.getElementById('error');
+
+      resultDiv.innerHTML = '';
+      errorDiv.textContent = '';
+
+      if (!from || !to) {
+        errorDiv.textContent = "Please enter both source and destination IATA codes.";
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://api.aviationstack.com/v1/flights?access_key=${API_KEY}&dep_iata=${from}&arr_iata=${to}`);
+        const data = await response.json();
+
+        if (!data || !data.data || data.data.length === 0) {
+          resultDiv.innerHTML = '<p>No flights found for the selected route.</p>';
+          return;
+        }
+
+        data.data.slice(0, 5).forEach(flight => {
+          const flightHTML = `
+            <div class="flight-card">
+              <p><strong>Flight:</strong> ${flight.airline.name} (${flight.flight.iata})</p>
+              <p><strong>Departure:</strong> ${flight.departure.airport} at ${flight.departure.scheduled}</p>
+              <p><strong>Arrival:</strong> ${flight.arrival.airport} at ${flight.arrival.scheduled}</p>
+              <p><strong>Status:</strong> ${flight.flight_status}</p>
+            </div>
+          `;
+          resultDiv.innerHTML += flightHTML;
+        });
+      } catch (error) {
+        errorDiv.textContent = "Error fetching flight data. Try again later.";
+      }
+    }
+
+    // Train Fare Placeholder Function
+    function fetchTrainFare() {
+      const trainFrom = document.getElementById('train-from').value;
+      const trainTo = document.getElementById('train-to').value;
+      const trainDate = document.getElementById('train-date').value;
+      const resultDiv = document.getElementById('train-results');
+      const errorDiv = document.getElementById('train-error');
+
+      resultDiv.innerHTML = '';
+      errorDiv.textContent = '';
+
+      if (!trainFrom || !trainTo || !trainDate) {
+        errorDiv.textContent = "Please fill all the required fields.";
+        return;
+      }
+
+      // Make your API call to fetch real-time train data here
+      resultDiv.innerHTML = `<p>Train fare data for ${trainFrom} to ${trainTo} on ${trainDate} will be displayed here.</p>`;
+    }
+
+    // Bus Fare Placeholder Function
+    function fetchBusFare() {
+      const busFrom = document.getElementById('bus-from').value;
+      const busTo = document.getElementById('bus-to').value;
+      const busDate = document.getElementById('bus-date').value;
+      const resultDiv = document.getElementById('bus-results');
+      const errorDiv = document.getElementById('bus-error');
+
+      resultDiv.innerHTML = '';
+      errorDiv.textContent = '';
+
+      if (!busFrom || !busTo || !busDate) {
+        errorDiv.textContent = "Please fill all the required fields.";
+        return;
+      }
+
+      // Make your API call to fetch real-time bus data here
+      resultDiv.innerHTML = `<p>Bus fare data for ${busFrom} to ${busTo} on ${busDate} will be displayed here.</p>`;
+    }
+  </script>
 
 </body>
 </html>
